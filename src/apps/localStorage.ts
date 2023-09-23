@@ -5,28 +5,27 @@ const Local_Storage_Keys: LocalStorageKeysObject = {
 
 class LocalStorage {
   // Check if a key exists in localStorage const
-  static hasItem(key: string): boolean {
-    return key in Local_Storage_Keys;
-  }
 
   // Set a value in localStorage
   static set<T = null>(key: LocalStorageKeys, value: T): void {
-    if (!this.hasItem(key)) {
+    if (!(key in Local_Storage_Keys)) {
       console.error(`Error parsing localStorage value for key "${key}":`);
 
       return;
     }
 
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(Local_Storage_Keys[key], JSON.stringify(value));
   }
 
   // Get a value from localStorage with an optional default value
   static get<T = null>(key: LocalStorageKeys, defaultValue?: T): T | null {
-    if (!this.hasItem(key)) {
-      const storedValue = localStorage.getItem(key);
+    if (key in Local_Storage_Keys) {
+      const storedValue = localStorage.getItem(Local_Storage_Keys[key]);
+
       if (storedValue === null) {
         return defaultValue ?? null;
       }
+
       try {
         return JSON.parse(storedValue) as T;
       } catch (error) {
@@ -44,13 +43,13 @@ class LocalStorage {
 
   // Remove an item from localStorage
   static remove(key: LocalStorageKeys): void {
-    if (!this.hasItem(key)) {
+    if (!(key in Local_Storage_Keys)) {
       console.error(`Error parsing localStorage value for key "${key}":`);
 
       return;
     }
 
-    localStorage.removeItem(key);
+    localStorage.removeItem(Local_Storage_Keys[key]);
   }
 }
 
