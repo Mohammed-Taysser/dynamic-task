@@ -6,11 +6,13 @@ import Grid from '@mui/material/Grid';
 import MuiLink from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import favicon from '../../assets/images/icons/favicon.png';
-import { useState } from 'react';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function Register() {
+  usePageTitle('Sign Up');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
