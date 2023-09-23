@@ -1,17 +1,29 @@
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import MuiLink from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
-import favicon from '../../assets/images/icons/favicon.png';
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import favicon from '../../assets/images/icons/favicon.png';
+import usePageTitle from '../../hooks/usePageTitle';
+import {
+  selectAuth,
+  useAppDispatch,
+  useAppSelector,
+} from '../../hooks/useRedux';
+import { login } from '../../redux/slices/auth';
+import { Alert } from '@mui/material';
+import Button from '../../components/Button';
 
 function Login() {
-  const [formData, setFormData] = useState({
+  usePageTitle('Sign In');
+  const dispatch = useAppDispatch();
+  const navigateTo = useNavigate();
+  const loginState = useAppSelector(selectAuth);
+  const [formData, setFormData] = useState<LoginBodyState>({
     email: '',
     password: '',
   });
@@ -19,7 +31,11 @@ function Login() {
   const onFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
-    console.log(formData);
+    dispatch(login(formData)).then((action) => {
+      if (login.fulfilled.match(action)) {
+        navigateTo('/');
+      }
+    });
   };
 
   const onInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,11 +85,18 @@ function Login() {
                 autoComplete='current-password'
               />
 
+              {loginState.error && (
+                <Alert severity='error' sx={{ textAlign: 'left' }}>
+                  {loginState.error}
+                </Alert>
+              )}
+
               <Button
                 type='submit'
                 fullWidth
                 variant='contained'
                 sx={{ mt: 3, mb: 2 }}
+                isLoading={loginState.status === 'loading'}
                 size='large'
               >
                 Sign In
